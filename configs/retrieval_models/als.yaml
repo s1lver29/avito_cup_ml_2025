@@ -1,0 +1,6 @@
+type: als
+params:
+  iterations: 50
+  factors: 250
+  regularization: 0.3
+  use_gpu: true

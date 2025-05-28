@@ -1,0 +1,46 @@
+name: popular
+type: popular_items
+class: PopularItemsRetriever
+
+methods:
+  - id: popular_items_1d
+    function: get_popular_items
+    output_column: score_popular_items_1d
+    params:
+      days: 1
+      top_k: 10
+      use_cache: false
+
+  - id: popular_items_30d
+    function: get_popular_items
+    output_column: score_popular_items_30d
+    params:
+      days: 30
+      top_k: 10
+      use_cache: false
+
+  - id: popular_items_by_category_7d
+    function: get_popular_items_by_category
+    output_column: score_popular_items_by_category_7d
+    params:
+      days: 7
+      top_k: 1
+      use_cache: false
+
+  - id: popular_items_by_category_30d
+    function: get_popular_items_by_category
+    output_column: score_popular_items_by_category_30d
+    params:
+      days: 30
+      top_k: 1
+      use_cache: false
+
+join_type: full
+
+default_days: 7
+default_top_k: 100
+use_cache: false
+
+trending:
+  window_days: 3
+  previous_days: 7

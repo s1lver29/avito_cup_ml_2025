@@ -1,0 +1,19 @@
+defaults:
+  - ./retrieval_models/als@retrieval_models.als
+  - ./retrieval_models/bpr@retrieval_models.bpr
+  # - ./retrieval_models/popular@retrieval_models.popular
+  - reranker_models: catboost
+  - _self_
+  
+clearml:
+  project_name: Competitions/Avito_ml_cup_2025
+  task_name: ALS_BPR_Reranker_Catboost_v1.0
+  task_type: training
+
+experiment:
+  name: baseline
+  version: 1.0
+  
+validation:
+  days_retriever: 7
+  days_reranker: 7

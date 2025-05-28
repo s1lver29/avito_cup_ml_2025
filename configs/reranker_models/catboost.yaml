@@ -1,0 +1,16 @@
+type: catboost
+class: CatBoostRanker
+params:
+  boosting_type: Plain
+  iterations: 500
+  learning_rate: 0.05
+  depth: 8
+  objective: "PairLogitPairwise:max_pairs=10000"
+  random_seed: 42
+  verbose: 50
+  task_type: GPU
+  nan_mode: Min
+
+training:
+  group_column: "cookie"
+  target_column: "is_contact"

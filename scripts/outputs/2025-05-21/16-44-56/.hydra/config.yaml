@@ -1,0 +1,37 @@
+models:
+  als:
+    type: als
+    params:
+      iterations: 50
+      factors: 250
+      regularization: 0.3
+      use_gpu: true
+  popular:
+    name: popular
+    type: popular_items
+    class: PopularItemsRetriever
+    params:
+      use_cache: true
+    training:
+      window_days: 7
+    inference:
+      n_recommendations: 100
+      top_k: 200
+reranker_models:
+  type: catboost
+  params:
+    boosting_type: Plain
+    iterations: 500
+    learning_rate: 0.05
+    depth: 8
+    objective: PairLogitPairwise:max_pairs=10000
+    random_seed: 42
+    verbose: 50
+    task_type: GPU
+    nan_mode: Min
+experiment:
+  name: baseline
+  version: 1.0
+validation:
+  days_retriever: 7
+  days_reranker: 7

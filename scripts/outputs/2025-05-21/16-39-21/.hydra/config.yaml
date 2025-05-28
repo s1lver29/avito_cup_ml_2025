@@ -1,0 +1,13 @@
+model:
+  type: als
+  params:
+    iterations: 50
+    factors: 250
+    regularization: 0.3
+    use_gpu: true
+experiment:
+  name: baseline
+  version: 1.0
+validation:
+  days_retriever: 7
+  days_reranker: 7

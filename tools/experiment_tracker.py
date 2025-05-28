@@ -10,7 +10,6 @@ from typing import Optional, Dict, Any, Union, List
 from pathlib import Path
 
 import pandas as pd
-import polars as pl
 import numpy as np
 
 import matplotlib.pyplot as plt
@@ -139,26 +138,6 @@ class ExperimentTracker:
             )
         logging.info(f"Logged table {title} with shape {table.shape}")
 
-    def log_figure(
-        self, title: str, figure: plt.Figure, iteration: int | None = None
-    ) -> None:
-        """
-        Логирование графиков.
-
-        Args:
-            title: Название графика
-            figure: Matplotlib Figure для логирования
-            iteration: Итерация (шаг)
-        """
-        if self.use_clearml and self.logger:
-            self.logger.report_matplotlib_figure(
-                title=title, series="figure", figure=figure, iteration=iteration
-            )
-        else:
-            # Локальное сохранение графика, если ClearML отключен
-            os.makedirs("figures", exist_ok=True)
-            figure.savefig(f"figures/{title}_{iteration}.png")
-
     def log_hyperparams(self, params: Dict[str, Any]) -> None:
         """
         Логирование гиперпараметров.
@@ -242,69 +221,37 @@ class ExperimentTracker:
             logging.error(f"Ошибка при получении датасета: {e}")
             return None
 
-    # def save_model(
-    #     self,
-    #     model: Any,
-    #     name: str,
-    #     tags: List[str] | None = None,
-    #     framework: str | None = None,
-    #     model_path: str | None = None,
-    # ) -> Optional[str]:
-    #     """
-    #     Сохранение модели в ClearML.
+    def save_model(
+        self,
+        model: Any,
+        name: str,
+        model_path: str,
+        tags: List[str] | None = None,
+        framework: str | None = None,
+    ) -> Optional[str]:
+        """
+        Сохранение модели в ClearML.
 
-    #     Args:
-    #         model: Объект модели
-    #         name: Название модели
-    #         tags: Теги модели
-    #         framework: Фреймворк модели (pytorch, tensorflow, etc.)
-    #         model_path: Путь для сохранения (опционально)
+        Args:
+            model: Объект модели
+            name: Название модели
+            tags: Теги модели
+            framework: Фреймворк модели (pytorch, tensorflow, etc.)
+            model_path: Путь для сохранения (опционально)
 
-    #     Returns:
-    #         ID сохраненной модели или None при ошибке
-    #     """
-    #     if not self.use_clearml:
-    #         logging.warning("ClearML отключен, модель сохранена только локально")
+        Returns:
+            ID сохраненной модели или None при ошибке
+        """
+        try:
+            output_model = OutputModel(task=self.task, name=name, tags=tags)
+            # Общий случай для других моделей
 
-    #         if model_path:
-    #             os.makedirs(os.path.dirname(model_path), exist_ok=True)
-    #             # Здесь может потребоваться специфичная логика сохранения в зависимости от фреймворка
-    #             return model_path
-    #         return None
+            output_model.update_weights(weights_filename=model_path)
 
-    #     try:
-    #         output_model = OutputModel(task=self.task, name=name, tags=tags)
-
-    #         if framework == "pytorch":
-    #             import torch
-
-    #             output_model.update_weights(
-    #                 weights_filename="model.pt", auto_delete_file=False
-    #             )
-    #             torch.save(model.state_dict(), "model.pt")
-    #         elif framework == "tensorflow":
-    #             model_path = model_path or "model_tf"
-    #             model.save(model_path)
-    #             output_model.update_weights_package(weights_path=model_path)
-    #         elif framework == "sklearn":
-    #             import joblib
-
-    #             model_path = model_path or "model.joblib"
-    #             joblib.dump(model, model_path)
-    #             output_model.update_weights(weights_filename=model_path)
-    #         else:
-    #             # Общий случай для других моделей
-    #             import pickle
-
-    #             model_path = model_path or "model.pkl"
-    #             with open(model_path, "wb") as f:
-    #                 pickle.dump(model, f)
-    #             output_model.update_weights(weights_filename=model_path)
-
-    #         return output_model.id
-    #     except Exception as e:
-    #         logging.error(f"Ошибка при сохранении модели: {e}")
-    #         return None
+            return output_model.id
+        except Exception as e:
+            logging.error(f"Ошибка при сохранении модели: {e}")
+            return None
 
     # def load_model(
     #     self,

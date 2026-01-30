@@ -91,7 +91,7 @@ jobs:
           LLM_NAME: ${{ secrets.LLM_NAME }}
           URL_LLM: ${{ secrets.URL_LLM }}
           APIKEY_LLM: ${{ secrets.APIKEY_LLM }}
-          TOKEN_REVIEWER_GITHUB: ${{ secrets.TOKEN_REVIEWER_GITHUB }}
+          TOKEN_REVIEWER_GITHUB: ${{ secrets.GITHUB_TOKEN }}
           REPO_PATH_GITHUB: /tmp/repo
 
   # ============================================

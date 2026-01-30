@@ -115,7 +115,7 @@ jobs:
       - name: Checkout coding-agents
         uses: actions/checkout@v4
         with:
-          repository: YOUR_ORG/coding-agents
+          repository: s1lver29/coding-agents
           path: coding-agents
           token: ${{ github.token }}
 

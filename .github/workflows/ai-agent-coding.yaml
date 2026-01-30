@@ -64,11 +64,7 @@ jobs:
 
     steps:
       - name: Checkout coding-agents
-        uses: actions/checkout@v4
-        with:
-          repository: s1lver29/coding-agents
-          path: coding-agents
-          token: ${{ secrets.TOKEN_GITHUB }}
+        run: git clone --depth 1 https://github.com/s1lver29/coding-agents.git coding-agents
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -113,11 +109,7 @@ jobs:
 
     steps:
       - name: Checkout coding-agents
-        uses: actions/checkout@v4
-        with:
-          repository: s1lver29/coding-agents
-          path: coding-agents
-          token: ${{ secrets.TOKEN_GITHUB }}
+        run: git clone --depth 1 https://github.com/s1lver29/coding-agents.git coding-agents
 
       - name: Set up Python
         uses: actions/setup-python@v5

@@ -74,5 +74,10 @@ def test_immutability_of_numbers():
     calc = SumCalculator(1, 2)
     nums = calc.numbers
     # Check if the returned tuple is immutable
-    with pytest.raises(TypeError):
+with pytest.raises(TypeError):
         nums[0] = 10
+
+def test_clear_functionality_after_adding():
+    calc = SumCalculator(1, 2)
+    calc.clear()
+    assert calc.calculate_sum() == 0

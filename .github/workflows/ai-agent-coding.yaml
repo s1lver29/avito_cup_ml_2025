@@ -68,7 +68,7 @@ jobs:
         with:
           repository: s1lver29/coding-agents
           path: coding-agents
-          token: ${{ github.token }}
+          token: ${{ secrets.TOKEN_GITHUB }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -117,7 +117,7 @@ jobs:
         with:
           repository: s1lver29/coding-agents
           path: coding-agents
-          token: ${{ github.token }}
+          token: ${{ secrets.TOKEN_GITHUB }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -134,7 +134,7 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: fountainhead/action-wait-for-check@v1.1.0
         with:
-          token: ${{ github.token }}
+          token: ${{ secrets.TOKEN_GITHUB }}
           checkName: 'build'  # Your main CI job name
           ref: ${{ github.event.pull_request.head.sha }}
           timeoutSeconds: 600

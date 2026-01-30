@@ -81,9 +81,9 @@ jobs:
         run: |
           cd coding-agents
           if [ -n "$ISSUE_NUM" ]; then
-            python runner.py --repo ${{ github.repository }} --issue $ISSUE_NUM
+            python coding_runner.py --repo ${{ github.repository }} --issue $ISSUE_NUM
           else
-            python runner.py --repo ${{ github.repository }}
+            python coding_runner.py --repo ${{ github.repository }}
           fi
         env:
           ISSUE_NUM: ${{ github.event.issue.number || github.event.inputs.issue_number }}
@@ -123,16 +123,16 @@ jobs:
           cd coding-agents
           pip install -e .
 
-      - name: Wait for other CI checks
-        if: github.event_name == 'pull_request'
-        uses: fountainhead/action-wait-for-check@v1.1.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          checkName: 'build'  # Your main CI job name
-          ref: ${{ github.event.pull_request.head.sha }}
-          timeoutSeconds: 600
-          intervalSeconds: 30
-        continue-on-error: true
+      # - name: Wait for other CI checks
+      #   if: github.event_name == 'pull_request'
+      #   uses: fountainhead/action-wait-for-check@v1.1.0
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     checkName: 'build'  # Your main CI job name
+      #     ref: ${{ github.event.pull_request.head.sha }}
+      #     timeoutSeconds: 600
+      #     intervalSeconds: 30
+      #   continue-on-error: true
 
       - name: Run Reviewer Agent
         run: |

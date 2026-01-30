@@ -66,14 +66,14 @@ jobs:
       - name: Checkout coding-agents
         uses: actions/checkout@v4
         with:
-          repository: YOUR_ORG/coding-agents
+          repository: s1lver29/coding-agents
           path: coding-agents
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TOKEN_GITHUB }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
           cache: 'pip'
 
       - name: Install dependencies
@@ -91,11 +91,11 @@ jobs:
           fi
         env:
           ISSUE_NUM: ${{ github.event.issue.number || github.event.inputs.issue_number }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
           LLM_NAME: ${{ secrets.LLM_NAME }}
           URL_LLM: ${{ secrets.URL_LLM }}
           APIKEY_LLM: ${{ secrets.APIKEY_LLM }}
-          GITHUB_REPO_PATH: /tmp/repo
+          REPO_PATH_GITHUB: /tmp/repo
 
   # ============================================
   # REVIEWER AGENT - Review PRs
@@ -117,7 +117,7 @@ jobs:
         with:
           repository: YOUR_ORG/coding-agents
           path: coding-agents
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TOKEN_GITHUB }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -134,7 +134,7 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: fountainhead/action-wait-for-check@v1.1.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TOKEN_GITHUB }}
           checkName: 'build'  # Your main CI job name
           ref: ${{ github.event.pull_request.head.sha }}
           timeoutSeconds: 600
@@ -148,7 +148,7 @@ jobs:
             --repo ${{ github.repository }} \
             --pr ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_REVIEWER || secrets.GITHUB_TOKEN }}
+          TOKEN_GITHUB: ${{ secrets.TOKEN_REVIEWER_GITHUB || secrets.TOKEN_GITHUB }}
           LLM_NAME: ${{ secrets.LLM_NAME }}
           URL_LLM: ${{ secrets.URL_LLM }}
           APIKEY_LLM: ${{ secrets.APIKEY_LLM }}

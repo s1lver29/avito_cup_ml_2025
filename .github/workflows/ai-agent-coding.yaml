@@ -86,11 +86,11 @@ jobs:
             python runner.py --repo ${{ github.repository }}
           fi
         env:
-          # ISSUE_NUM: ${{ github.event.issue.number || github.event.inputs.issue_number }}
+          ISSUE_NUM: ${{ github.event.issue.number || github.event.inputs.issue_number }}
           # TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-          # LLM_NAME: ${{ secrets.LLM_NAME }}
-          # URL_LLM: ${{ secrets.URL_LLM }}
-          # APIKEY_LLM: ${{ secrets.APIKEY_LLM }}
+          LLM_NAME: ${{ secrets.LLM_NAME }}
+          URL_LLM: ${{ secrets.URL_LLM }}
+          APIKEY_LLM: ${{ secrets.APIKEY_LLM }}
           REPO_PATH_GITHUB: /tmp/repo
 
   # ============================================

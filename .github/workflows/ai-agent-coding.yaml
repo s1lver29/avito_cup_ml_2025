@@ -85,7 +85,7 @@ jobs:
           else
             python runner.py --repo ${{ github.repository }}
           fi
-        # env:
+        env:
           # ISSUE_NUM: ${{ github.event.issue.number || github.event.inputs.issue_number }}
           # TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
           # LLM_NAME: ${{ secrets.LLM_NAME }}

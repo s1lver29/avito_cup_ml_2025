@@ -85,12 +85,12 @@ jobs:
           else
             python runner.py --repo ${{ github.repository }}
           fi
-        env:
-          ISSUE_NUM: ${{ github.event.issue.number || github.event.inputs.issue_number }}
-          TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-          LLM_NAME: ${{ secrets.LLM_NAME }}
-          URL_LLM: ${{ secrets.URL_LLM }}
-          APIKEY_LLM: ${{ secrets.APIKEY_LLM }}
+        # env:
+          # ISSUE_NUM: ${{ github.event.issue.number || github.event.inputs.issue_number }}
+          # TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+          # LLM_NAME: ${{ secrets.LLM_NAME }}
+          # URL_LLM: ${{ secrets.URL_LLM }}
+          # APIKEY_LLM: ${{ secrets.APIKEY_LLM }}
           REPO_PATH_GITHUB: /tmp/repo
 
   # ============================================
@@ -126,7 +126,7 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: fountainhead/action-wait-for-check@v1.1.0
         with:
-          token: ${{ secrets.TOKEN_GITHUB }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           checkName: 'build'  # Your main CI job name
           ref: ${{ github.event.pull_request.head.sha }}
           timeoutSeconds: 600

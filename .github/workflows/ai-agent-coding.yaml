@@ -1,0 +1,154 @@
+# Full Autonomous Coding Cycle
+# Copy this to your repository's .github/workflows/ai-coding-cycle.yml
+#
+# Complete autonomous workflow:
+# 1. New issue with 'ai-task' label → Coding Agent creates PR
+# 2. PR created → Reviewer Agent reviews
+# 3. Changes requested → Coding Agent fixes and updates PR
+# 4. Approved → Ready to merge
+
+name: AI Coding Cycle
+
+on:
+  # New issues trigger coding
+  issues:
+    types: [opened, labeled]
+
+  # PRs trigger review
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+  # Schedule: process backlog
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'What to run'
+        required: true
+        type: choice
+        options:
+          - coding-agent
+          - reviewer-agent
+          - both
+      issue_number:
+        description: 'Issue number (for coding agent)'
+        required: false
+        type: number
+      pr_number:
+        description: 'PR number (for reviewer agent)'
+        required: false
+        type: number
+
+concurrency:
+  group: ai-cycle-${{ github.repository }}-${{ github.event.issue.number || github.event.pull_request.number || 'scheduled' }}
+  cancel-in-progress: false
+
+jobs:
+  # ============================================
+  # CODING AGENT - Process Issues
+  # ============================================
+  coding:
+    name: Coding Agent
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.mode != 'reviewer-agent') ||
+      (github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'ai-task'))
+
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: read
+
+    steps:
+      - name: Checkout coding-agents
+        uses: actions/checkout@v4
+        with:
+          repository: YOUR_ORG/coding-agents
+          path: coding-agents
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          cd coding-agents
+          pip install -e .
+
+      - name: Run Coding Agent
+        run: |
+          cd coding-agents
+          if [ -n "$ISSUE_NUM" ]; then
+            python runner.py --repo ${{ github.repository }} --issue $ISSUE_NUM
+          else
+            python runner.py --repo ${{ github.repository }}
+          fi
+        env:
+          ISSUE_NUM: ${{ github.event.issue.number || github.event.inputs.issue_number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LLM_NAME: ${{ secrets.LLM_NAME }}
+          URL_LLM: ${{ secrets.URL_LLM }}
+          APIKEY_LLM: ${{ secrets.APIKEY_LLM }}
+          GITHUB_REPO_PATH: /tmp/repo
+
+  # ============================================
+  # REVIEWER AGENT - Review PRs
+  # ============================================
+  review:
+    name: Reviewer Agent
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.mode != 'coding-agent') ||
+      (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout coding-agents
+        uses: actions/checkout@v4
+        with:
+          repository: YOUR_ORG/coding-agents
+          path: coding-agents
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          cd coding-agents
+          pip install -e .
+
+      - name: Wait for other CI checks
+        if: github.event_name == 'pull_request'
+        uses: fountainhead/action-wait-for-check@v1.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checkName: 'build'  # Your main CI job name
+          ref: ${{ github.event.pull_request.head.sha }}
+          timeoutSeconds: 600
+          intervalSeconds: 30
+        continue-on-error: true
+
+      - name: Run Reviewer Agent
+        run: |
+          cd coding-agents
+          python reviewer_runner.py \
+            --repo ${{ github.repository }} \
+            --pr ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_REVIEWER || secrets.GITHUB_TOKEN }}
+          LLM_NAME: ${{ secrets.LLM_NAME }}
+          URL_LLM: ${{ secrets.URL_LLM }}
+          APIKEY_LLM: ${{ secrets.APIKEY_LLM }}

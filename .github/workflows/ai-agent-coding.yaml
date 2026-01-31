@@ -142,8 +142,7 @@ jobs:
             --repo ${{ github.repository }} \
             --pr ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
         env:
-          TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-          TOKEN_REVIEWER_GITHUB: ${{ secrets.TOKEN_REVIEWER_GITHUB || secrets.TOKEN_GITHUB }}
+          TOKEN_REVIEWER_GITHUB: ${{ secrets.TOKEN_REVIEWER_GITHUB }}
           LLM_NAME: ${{ secrets.LLM_NAME }}
           URL_LLM: ${{ secrets.URL_LLM }}
           APIKEY_LLM: ${{ secrets.APIKEY_LLM }}
